@@ -1,0 +1,17 @@
+.nav-link {
+  text-decoration: none;
+  color: gray;
+
+  &:hover,
+  &:focus {
+    color: black;
+  }
+
+  &__icon {
+    font-size: 1.4rem;
+  }
+
+  &__title {
+    margin-left: 1rem;
+  }
+}
