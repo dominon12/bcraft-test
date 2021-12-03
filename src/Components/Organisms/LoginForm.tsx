@@ -15,6 +15,8 @@ import {
   SnackBarContext,
   SnackBarMessageColor,
 } from "../../Contexts/SnackBarContext";
+import { updateFieldValue } from "../../Redux/Forms/Actions";
+import { getFormState } from "../../Services/FormStateService";
 
 /**
  * Renders login form with inputs
@@ -27,7 +29,7 @@ const LoginForm: React.FC = (props): JSX.Element => {
   const navigate = useNavigate();
 
   // redux
-  const user = useSelector((state: RootState) => state.user);
+  const { user, forms } = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
 
   /**
@@ -41,11 +43,14 @@ const LoginForm: React.FC = (props): JSX.Element => {
   // snackbar
   const { sendMessage } = useContext(SnackBarContext);
 
+  // saved form state
+  const formState = getFormState(forms, "login");
+
   // email field
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(formState.email ?? "");
   const emailInputRef = useRef<HTMLInputElement>(null);
   // password field
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState(formState.password ?? "");
   const passwordInputRef = useRef<HTMLInputElement>(null);
   // form
   const [formValid, setFormValid] = useState(false);
@@ -55,10 +60,23 @@ const LoginForm: React.FC = (props): JSX.Element => {
    * Check if form is valid on every
    * inputs values changes
    */
-  useEffect(() => {
+  const validateForm = () => {
     const isValid = checkFormValid([emailInputRef, passwordInputRef]);
-
     setFormValid(isValid);
+  };
+
+  /**
+   * Save form fields values in redux's state
+   * on every change.
+   */
+  const updateReduxFormState = () => {
+    dispatch(updateFieldValue("login", "email", email));
+    dispatch(updateFieldValue("login", "password", password));
+  };
+
+  useEffect(() => {
+    validateForm();
+    updateReduxFormState();
   }, [email, password]);
 
   /**
