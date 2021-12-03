@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import "./RegistrationForm.scss";
 import Input from "../Molecules/Input";
-import { emailPattern } from "../../Services/FormService";
+import { checkFormValid, emailPattern } from "../../Services/FormService";
+import Button from "../Atoms/Button";
 
 /**
  * Renders registration form with inputs
@@ -12,15 +13,38 @@ import { emailPattern } from "../../Services/FormService";
  * @return {*}  {JSX.Element}
  */
 const RegistrationForm: React.FC = (): JSX.Element => {
+  // email field
   const [email, setEmail] = useState("");
+  const emailInputRef = useRef<HTMLInputElement>(null);
+  // password field
   const [password, setPassword] = useState("");
+  const passwordInputRef = useRef<HTMLInputElement>(null);
+  // password2 field
   const [password2, setPassword2] = useState("");
+  const password2InputRef = useRef<HTMLInputElement>(null);
+  // form
+  const [formValid, setFormValid] = useState(false);
+
+  useEffect(() => {
+    const isValid = checkFormValid([
+      emailInputRef,
+      passwordInputRef,
+      password2InputRef,
+    ]);
+
+    setFormValid(isValid);
+  }, [email, password, password2]);
+
+  const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };
 
   return (
     <div className="registration-form">
       <div className="registration-form__content">
-        <form className="registration-form__form">
+        <form onSubmit={handleRegister} className="registration-form__form">
           <Input
+            ref={emailInputRef}
             value={email}
             setValue={setEmail}
             id="reg-email"
@@ -34,6 +58,7 @@ const RegistrationForm: React.FC = (): JSX.Element => {
             required
           />
           <Input
+            ref={passwordInputRef}
             value={password}
             setValue={setPassword}
             id="reg-password"
@@ -49,6 +74,7 @@ const RegistrationForm: React.FC = (): JSX.Element => {
             required
           />
           <Input
+            ref={password2InputRef}
             value={password2}
             setValue={setPassword2}
             id="reg-password2"
@@ -64,6 +90,7 @@ const RegistrationForm: React.FC = (): JSX.Element => {
             }}
             required
           />
+          <Button disabled={!formValid}>Register</Button>
         </form>
       </div>
     </div>

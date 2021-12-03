@@ -170,3 +170,25 @@ export function validateFormField(
     errors,
   };
 }
+
+/**
+ * Checks whether every form field is valid
+ * (e.g. is not required and has 'valid' class)
+ *
+ * @export
+ * @param {React.RefObject<HTMLInputElement>[]} refs - array of refs to check
+ * @return {*}  {boolean} - result
+ */
+export function checkFormValid(
+  refs: React.RefObject<HTMLInputElement>[]
+): boolean {
+  let formValid = true;
+
+  refs.forEach((ref) => {
+    if (!ref.current || !ref.current.classList.contains("valid")) {
+      formValid = false;
+    }
+  });
+
+  return formValid;
+}

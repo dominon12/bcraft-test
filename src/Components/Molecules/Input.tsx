@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { forwardRef, useState } from "react";
 
 import "./Input.scss";
 import FormFieldContainer from "../Atoms/FormFieldContainer";
@@ -25,7 +25,7 @@ interface Props {
  *
  * @return {*}  {JSX.Element}
  */
-const Input: React.FC<Props> = (props): JSX.Element => {
+const Input = forwardRef<HTMLInputElement, Props>((props, ref): JSX.Element => {
   const [isValid, setIsValid] = useState(true);
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const [wasTouched, setWasTouched] = useState(false);
@@ -76,6 +76,7 @@ const Input: React.FC<Props> = (props): JSX.Element => {
       )}
 
       <input
+        ref={ref}
         className={`form-field ${
           isValid ? (wasTouched ? "valid" : "") : "invalid"
         }`}
@@ -89,11 +90,11 @@ const Input: React.FC<Props> = (props): JSX.Element => {
       />
 
       {!isValid &&
-        errorMessages.map((errMessage) => (
-          <FormFieldError>{errMessage}</FormFieldError>
+        errorMessages.map((errMessage, index) => (
+          <FormFieldError key={index}>{errMessage}</FormFieldError>
         ))}
     </FormFieldContainer>
   );
-};
+});
 
 export default Input;

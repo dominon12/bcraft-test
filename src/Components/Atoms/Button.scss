@@ -1,0 +1,17 @@
+.button {
+  cursor: pointer;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 3rem;
+  background-color: gray;
+  color: white;
+
+  &:disabled {
+    transform: none;
+    box-shadow: none;
+    background-color: lightgray;
+    cursor: not-allowed;
+  }
+}
