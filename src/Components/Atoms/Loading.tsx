@@ -1,8 +1,6 @@
 import React from "react";
 import { BeatLoader } from "react-spinners";
 
-import "./Loading.scss";
-
 const Loading: React.FC = (): JSX.Element => {
   return (
     <div className="loading">
