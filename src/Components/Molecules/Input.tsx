@@ -4,7 +4,7 @@ import "./Input.scss";
 import FormFieldContainer from "../Atoms/FormFieldContainer";
 import FormFieldError from "../Atoms/FormFieldError";
 import FormFieldLabel from "../Atoms/FormFieldLabel";
-import { ValidationOptions } from "../Types/FormTypes";
+import { ValidationOptions } from "../../Types/FormTypes";
 import { validateFormField } from "../../Services/FormService";
 
 interface Props {

@@ -1,6 +1,7 @@
 import React from "react";
 
 import "./Button.scss";
+import Loading from "./Loading";
 
 interface Props {
   onClick?: () => void;
@@ -20,7 +21,7 @@ const Button: React.FC<Props> = (props): JSX.Element => {
       onClick={props.onClick}
       disabled={props.disabled || props.isLoading}
     >
-      {props.children}
+      {props.isLoading ? <Loading /> : props.children}
     </button>
   );
 };
