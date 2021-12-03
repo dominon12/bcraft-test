@@ -16,6 +16,7 @@ interface Props {
   type: React.HTMLInputTypeAttribute;
   labelText?: string;
   required?: boolean;
+  disabled?: boolean;
   validationOptions?: ValidationOptions;
 }
 
@@ -87,6 +88,7 @@ const Input = forwardRef<HTMLInputElement, Props>((props, ref): JSX.Element => {
         onChange={handleChangeInputValue}
         required={props.required}
         type={props.type}
+        disabled={props.disabled}
       />
 
       {!isValid &&

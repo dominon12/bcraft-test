@@ -1,9 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 import { checkFormValid } from "../../Services/FormService";
 import Button from "../Atoms/Button";
 import Input from "../Molecules/Input";
 import FormTemplate from "../Templates/FormTemplate";
+import { RootState } from "../../Redux/Store";
+import { WebResponse } from "../../Types/ApiTypes";
+import { performChangePassword } from "../../Services/ApiService";
 
 /**
  * Renders change password form with inputs
@@ -13,6 +18,19 @@ import FormTemplate from "../Templates/FormTemplate";
  * @return {*}  {JSX.Element}
  */
 const ChangePasswordForm: React.FC = (): JSX.Element => {
+  const navigate = useNavigate();
+
+  // redux
+  const user = useSelector((state: RootState) => state.user);
+
+  /**
+   * Navigate user to the logic page
+   * if he's not logged in.
+   */
+  useEffect(() => {
+    if (!user) navigate("/login");
+  }, []);
+
   // old password field
   const [oldPassword, setOldPassword] = useState("");
   // new password field
@@ -23,6 +41,7 @@ const ChangePasswordForm: React.FC = (): JSX.Element => {
   const password2InputRef = useRef<HTMLInputElement>(null);
   // form
   const [formValid, setFormValid] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   /**
    * Check if form is valid on every
@@ -34,8 +53,43 @@ const ChangePasswordForm: React.FC = (): JSX.Element => {
     setFormValid(isValid);
   }, [newPassword, password2]);
 
-  const handleChangePassword = (e: React.FormEvent<HTMLFormElement>) => {
+  /**
+   * Sets default inputs values.
+   */
+  const clearForm = () => {
+    setOldPassword("");
+    setNewPassword("");
+    setPassword2("");
+  };
+
+  /**
+   * Handles password change logic.
+   *
+   * @param {React.FormEvent<HTMLFormElement>} e
+   */
+  const handleChangePassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    // prevent page from reloading
     e.preventDefault();
+    // set is loading to true to indicate loading
+    setIsLoading(true);
+    // make request to api
+    const response: WebResponse = await performChangePassword(
+      oldPassword,
+      newPassword,
+      password2
+    );
+    // set is loading to false and clean form fields values
+    setIsLoading(false);
+    clearForm();
+    // check response status
+    if (response.status === 202) {
+      // success
+      navigate("/");
+      // TODO show change password message
+    } else {
+      // error
+      // TODO show error message
+    }
   };
 
   return (
@@ -48,6 +102,7 @@ const ChangePasswordForm: React.FC = (): JSX.Element => {
         labelText="Old Password"
         name="old-password"
         type="password"
+        disabled={isLoading}
         required
       />
       <Input
@@ -64,6 +119,7 @@ const ChangePasswordForm: React.FC = (): JSX.Element => {
           maxLength: 10,
           includeUppercaseLetters: true,
         }}
+        disabled={isLoading}
         required
       />
       <Input
@@ -81,9 +137,12 @@ const ChangePasswordForm: React.FC = (): JSX.Element => {
             valueName: "New password",
           },
         }}
+        disabled={isLoading}
         required
       />
-      <Button disabled={!formValid}>Change</Button>
+      <Button disabled={!formValid} isLoading={isLoading}>
+        Change
+      </Button>
     </FormTemplate>
   );
 };

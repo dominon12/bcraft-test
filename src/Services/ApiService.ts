@@ -1,7 +1,7 @@
 import { ApiResponse, WebResponse } from "../Types/ApiTypes";
 
 /**
- * Imitates get request to the server
+ * Imitates GET request to the server
  * to login.
  *
  * @export
@@ -31,7 +31,7 @@ export async function performLogin(
 }
 
 /**
- * Imitates post request to the server
+ * Imitates POST request to the server
  * to register a user.
  *
  * @export
@@ -53,7 +53,37 @@ export async function performRegistration(
       },
     };
     const response: WebResponse = {
-      status: 200,
+      status: 201,
+      data: userDataResponse,
+    };
+    setTimeout(() => {
+      resolve(response);
+    }, 1000);
+  });
+}
+
+/**
+ * Imitates PUT request to the server
+ * to change user's password.
+ *
+ * @export
+ * @param {string} oldPassword
+ * @param {string} newPassword
+ * @param {string} password2
+ * @return {*}  {Promise<WebResponse>}
+ */
+export async function performChangePassword(
+  oldPassword: string,
+  newPassword: string,
+  password2: string
+): Promise<WebResponse> {
+  return new Promise((resolve, reject) => {
+    const userDataResponse: ApiResponse = {
+      success: true,
+      data: {},
+    };
+    const response: WebResponse = {
+      status: 202,
       data: userDataResponse,
     };
     setTimeout(() => {

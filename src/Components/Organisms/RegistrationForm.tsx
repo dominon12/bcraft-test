@@ -62,6 +62,15 @@ const RegistrationForm: React.FC = (): JSX.Element => {
   }, [email, password, password2]);
 
   /**
+   * Sets default inputs values.
+   */
+  const clearForm = () => {
+    setEmail("");
+    setPassword("");
+    setPassword2("");
+  };
+
+  /**
    * Handles registration process logic.
    *
    * @param {React.FormEvent<HTMLFormElement>} e
@@ -77,10 +86,11 @@ const RegistrationForm: React.FC = (): JSX.Element => {
       password,
       password2
     );
-    // set is loading to false
+    // set is loading to false and clean form fields values
     setIsLoading(false);
+    clearForm();
     // check response status
-    if (response.status === 200) {
+    if (response.status === 201) {
       // success
       const user: User = response.data.data;
       dispatch(addUser(user));
@@ -106,6 +116,7 @@ const RegistrationForm: React.FC = (): JSX.Element => {
         validationOptions={{
           regexp: emailPattern,
         }}
+        disabled={isLoading}
         required
       />
       <Input
@@ -122,6 +133,7 @@ const RegistrationForm: React.FC = (): JSX.Element => {
           maxLength: 10,
           includeUppercaseLetters: true,
         }}
+        disabled={isLoading}
         required
       />
       <Input
@@ -139,6 +151,7 @@ const RegistrationForm: React.FC = (): JSX.Element => {
             valueName: "Password",
           },
         }}
+        disabled={isLoading}
         required
       />
       <Button disabled={!formValid} isLoading={isLoading}>

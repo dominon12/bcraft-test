@@ -55,6 +55,14 @@ const LoginForm: React.FC = (props): JSX.Element => {
   }, [email, password]);
 
   /**
+   * Sets default inputs values.
+   */
+  const clearForm = () => {
+    setEmail("");
+    setPassword("");
+  };
+
+  /**
    * Handles login process logic.
    *
    * @param {React.FormEvent<HTMLFormElement>} e
@@ -66,8 +74,9 @@ const LoginForm: React.FC = (props): JSX.Element => {
     setIsLoading(true);
     // make request to api
     const response: WebResponse = await performLogin(email, password);
-    // set is loading to false
+    // set is loading to false and clean form fields values
     setIsLoading(false);
+    clearForm();
     // check response status
     if (response.status === 200) {
       // success
@@ -95,6 +104,7 @@ const LoginForm: React.FC = (props): JSX.Element => {
         validationOptions={{
           regexp: emailPattern,
         }}
+        disabled={isLoading}
         required
       />
       <Input
@@ -111,6 +121,7 @@ const LoginForm: React.FC = (props): JSX.Element => {
           maxLength: 10,
           includeUppercaseLetters: true,
         }}
+        disabled={isLoading}
         required
       />
       <Button disabled={!formValid} isLoading={isLoading}>
