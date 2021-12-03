@@ -8,12 +8,15 @@ import App from "./Components/App";
 import reportWebVitals from "./reportWebVitals";
 import { store, persistor } from "./Redux/Store";
 import Loading from "./Components/Atoms/Loading";
+import SnackBarProvider from "./Contexts/SnackBarContext";
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <PersistGate loading={<Loading />} persistor={persistor}>
-        <App />
+        <SnackBarProvider defaultDelay={2500}>
+          <App />
+        </SnackBarProvider>
       </PersistGate>
     </Provider>
   </React.StrictMode>,

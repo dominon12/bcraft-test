@@ -1,0 +1,71 @@
+@keyframes fade-in {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.snackbar-message {
+  margin: 1rem 0;
+  border-radius: 3px;
+  color: #2a2a2a;
+  background-color: #fffffe;
+  box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 4px;
+  max-width: 350px;
+  line-height: 1.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 6px solid #000;
+
+  @media (max-width: 388px) {
+    max-width: 300px;
+  }
+  @media (max-width: 342px) {
+    max-width: 270px;
+  }
+
+  &.info {
+    border-color: #61dbfb; // react blue
+  }
+
+  &.success {
+    border-color: #42b883; // vue green
+  }
+
+  &.warning {
+    border-color: #ff3d00; // svetle orange
+  }
+
+  &.danger {
+    border-color: #dd0531; // angular red
+  }
+
+  &__body {
+    padding: 10px;
+  }
+
+  &__action {
+    padding-left: 10px;
+    padding-right: 20px;
+    cursor: pointer;
+  }
+
+  &:first-child {
+    margin-top: 0;
+  }
+  &:last-child {
+    margin-bottom: 0;
+  }
+}

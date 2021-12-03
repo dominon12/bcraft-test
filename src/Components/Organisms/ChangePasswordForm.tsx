@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -9,6 +9,10 @@ import FormTemplate from "../Templates/FormTemplate";
 import { RootState } from "../../Redux/Store";
 import { WebResponse } from "../../Types/ApiTypes";
 import { performChangePassword } from "../../Services/ApiService";
+import {
+  SnackBarContext,
+  SnackBarMessageColor,
+} from "../../Contexts/SnackBarContext";
 
 /**
  * Renders change password form with inputs
@@ -30,6 +34,9 @@ const ChangePasswordForm: React.FC = (): JSX.Element => {
   useEffect(() => {
     if (!user) navigate("/login");
   }, []);
+
+  // snackbar
+  const { sendMessage } = useContext(SnackBarContext);
 
   // old password field
   const [oldPassword, setOldPassword] = useState("");
@@ -85,10 +92,14 @@ const ChangePasswordForm: React.FC = (): JSX.Element => {
     if (response.status === 202) {
       // success
       navigate("/");
-      // TODO show change password message
+      sendMessage("Your password has been successfully changed!", {
+        color: SnackBarMessageColor.SUCCESS,
+      });
     } else {
       // error
-      // TODO show error message
+      sendMessage("An error occurred!", {
+        color: SnackBarMessageColor.DANGER,
+      });
     }
   };
 

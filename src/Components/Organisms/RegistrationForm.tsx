@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -11,6 +11,10 @@ import { WebResponse } from "../../Types/ApiTypes";
 import { performRegistration } from "../../Services/ApiService";
 import { addUser } from "../../Redux/User/Actions";
 import { User } from "../../Types/UserTypes";
+import {
+  SnackBarContext,
+  SnackBarMessageColor,
+} from "../../Contexts/SnackBarContext";
 
 /**
  * Renders registration form with inputs
@@ -33,6 +37,9 @@ const RegistrationForm: React.FC = (): JSX.Element => {
   useEffect(() => {
     if (user) navigate("/");
   }, []);
+
+  // snackbar
+  const { sendMessage } = useContext(SnackBarContext);
 
   // email field
   const [email, setEmail] = useState("");
@@ -94,11 +101,15 @@ const RegistrationForm: React.FC = (): JSX.Element => {
       // success
       const user: User = response.data.data;
       dispatch(addUser(user));
-      // TODO show registration message
+      sendMessage("Successfully registered and logged in", {
+        color: SnackBarMessageColor.SUCCESS,
+      });
       navigate("/");
     } else {
       // error
-      // TODO show error message
+      sendMessage("An error occurred!", {
+        color: SnackBarMessageColor.DANGER,
+      });
     }
   };
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 
@@ -11,6 +11,10 @@ import FormTemplate from "../Templates/FormTemplate";
 import { RootState } from "../../Redux/Store";
 import { addUser } from "../../Redux/User/Actions";
 import { performLogin } from "../../Services/ApiService";
+import {
+  SnackBarContext,
+  SnackBarMessageColor,
+} from "../../Contexts/SnackBarContext";
 
 /**
  * Renders login form with inputs
@@ -33,6 +37,9 @@ const LoginForm: React.FC = (props): JSX.Element => {
   useEffect(() => {
     if (user) navigate("/");
   }, []);
+
+  // snackbar
+  const { sendMessage } = useContext(SnackBarContext);
 
   // email field
   const [email, setEmail] = useState("");
@@ -82,11 +89,15 @@ const LoginForm: React.FC = (props): JSX.Element => {
       // success
       const user: User = response.data.data;
       dispatch(addUser(user));
-      // TODO show login message
+      sendMessage("Successfully logged in", {
+        color: SnackBarMessageColor.SUCCESS,
+      });
       navigate("/");
     } else {
       // error
-      // TODO show error message
+      sendMessage("An error occurred!", {
+        color: SnackBarMessageColor.DANGER,
+      });
     }
   };
 

@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
+import { SnackBarContext } from "../../Contexts/SnackBarContext";
 import { removeUser } from "../../Redux/User/Actions";
 
 /**
@@ -12,6 +13,7 @@ import { removeUser } from "../../Redux/User/Actions";
 const Logout: React.FC = (props) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { sendMessage } = useContext(SnackBarContext);
 
   /**
    * Logs user out and navigates
@@ -19,8 +21,8 @@ const Logout: React.FC = (props) => {
    */
   useEffect(() => {
     dispatch(removeUser());
+    sendMessage("Successfully logged out");
     navigate("/");
-    // TODO show logout message
   }, []);
 
   return null;
