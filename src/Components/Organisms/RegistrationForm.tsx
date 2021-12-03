@@ -1,9 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
 import Input from "../Molecules/Input";
 import { checkFormValid, emailPattern } from "../../Services/FormService";
 import Button from "../Atoms/Button";
 import FormTemplate from "../Templates/FormTemplate";
+import { RootState } from "../../Redux/Store";
+import { WebResponse } from "../../Types/ApiTypes";
+import { performRegistration } from "../../Services/ApiService";
+import { addUser } from "../../Redux/User/Actions";
+import { User } from "../../Types/UserTypes";
 
 /**
  * Renders registration form with inputs
@@ -13,6 +20,20 @@ import FormTemplate from "../Templates/FormTemplate";
  * @return {*}  {JSX.Element}
  */
 const RegistrationForm: React.FC = (): JSX.Element => {
+  const navigate = useNavigate();
+
+  // redux
+  const user = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch();
+
+  /**
+   * Navigate user to the home page
+   * if he's already logged in.
+   */
+  useEffect(() => {
+    if (user) navigate("/");
+  }, []);
+
   // email field
   const [email, setEmail] = useState("");
   const emailInputRef = useRef<HTMLInputElement>(null);
@@ -24,6 +45,7 @@ const RegistrationForm: React.FC = (): JSX.Element => {
   const password2InputRef = useRef<HTMLInputElement>(null);
   // form
   const [formValid, setFormValid] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   /**
    * Check if form is valid on every
@@ -39,8 +61,35 @@ const RegistrationForm: React.FC = (): JSX.Element => {
     setFormValid(isValid);
   }, [email, password, password2]);
 
-  const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
+  /**
+   * Handles registration process logic.
+   *
+   * @param {React.FormEvent<HTMLFormElement>} e
+   */
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
+    // prevent page from reloading
     e.preventDefault();
+    // set is loading to true to indicate loading
+    setIsLoading(true);
+    // make request to api
+    const response: WebResponse = await performRegistration(
+      email,
+      password,
+      password2
+    );
+    // set is loading to false
+    setIsLoading(false);
+    // check response status
+    if (response.status === 200) {
+      // success
+      const user: User = response.data.data;
+      dispatch(addUser(user));
+      // TODO show registration message
+      navigate("/");
+    } else {
+      // error
+      // TODO show error message
+    }
   };
 
   return (
@@ -92,7 +141,9 @@ const RegistrationForm: React.FC = (): JSX.Element => {
         }}
         required
       />
-      <Button disabled={!formValid}>Register</Button>
+      <Button disabled={!formValid} isLoading={isLoading}>
+        Register
+      </Button>
     </FormTemplate>
   );
 };

@@ -54,6 +54,11 @@ const LoginForm: React.FC = (props): JSX.Element => {
     setFormValid(isValid);
   }, [email, password]);
 
+  /**
+   * Handles login process logic.
+   *
+   * @param {React.FormEvent<HTMLFormElement>} e
+   */
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     // prevent page from reloading
     e.preventDefault();
