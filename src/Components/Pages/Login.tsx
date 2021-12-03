@@ -1,6 +1,6 @@
 import React from "react";
 
-import "./Login.scss";
+import LoginForm from "../Organisms/LoginForm";
 
 /**
  * Page where users can log in.
@@ -8,7 +8,11 @@ import "./Login.scss";
  * @return {*}  {JSX.Element}
  */
 const Login: React.FC = (): JSX.Element => {
-  return <div className="login">Login</div>;
+  return (
+    <div className="login">
+      <LoginForm />
+    </div>
+  );
 };
 
 export default Login;

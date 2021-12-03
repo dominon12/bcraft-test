@@ -51,7 +51,7 @@ function toBeEqualToValidator(
   toBeEqualTo?: ToBeEqualValidation
 ): string | undefined {
   if (toBeEqualTo && value !== toBeEqualTo.valueToBeEqualTo) {
-    return `Fields' value isn't equal to ${toBeEqualTo.valueName} field`;
+    return `Field's value isn't equal to ${toBeEqualTo.valueName} field`;
   }
 }
 

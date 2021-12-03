@@ -1,6 +1,6 @@
 import React from "react";
 
-import "./ChangePassword.scss";
+import ChangePasswordForm from "../Organisms/ChangePasswordForm";
 
 /**
  * Page where users can change password.
@@ -8,7 +8,11 @@ import "./ChangePassword.scss";
  * @return {*}  {JSX.Element}
  */
 const ChangePassword: React.FC = (): JSX.Element => {
-  return <div className="change-password">Change password</div>;
+  return (
+    <div className="change-password">
+      <ChangePasswordForm />
+    </div>
+  );
 };
 
 export default ChangePassword;

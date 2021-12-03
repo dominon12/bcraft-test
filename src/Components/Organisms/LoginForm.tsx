@@ -1,27 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import Input from "../Molecules/Input";
 import { checkFormValid, emailPattern } from "../../Services/FormService";
 import Button from "../Atoms/Button";
+import Input from "../Molecules/Input";
 import FormTemplate from "../Templates/FormTemplate";
 
 /**
- * Renders registration form with inputs
- * and a button and handles registration
+ * Renders login form with inputs
+ * and a button and handles login
  * process's logic.
  *
  * @return {*}  {JSX.Element}
  */
-const RegistrationForm: React.FC = (): JSX.Element => {
+const LoginForm: React.FC = (props): JSX.Element => {
   // email field
   const [email, setEmail] = useState("");
   const emailInputRef = useRef<HTMLInputElement>(null);
   // password field
   const [password, setPassword] = useState("");
   const passwordInputRef = useRef<HTMLInputElement>(null);
-  // repeat password field
-  const [password2, setPassword2] = useState("");
-  const password2InputRef = useRef<HTMLInputElement>(null);
   // form
   const [formValid, setFormValid] = useState(false);
 
@@ -30,26 +27,22 @@ const RegistrationForm: React.FC = (): JSX.Element => {
    * inputs values changes
    */
   useEffect(() => {
-    const isValid = checkFormValid([
-      emailInputRef,
-      passwordInputRef,
-      password2InputRef,
-    ]);
+    const isValid = checkFormValid([emailInputRef, passwordInputRef]);
 
     setFormValid(isValid);
-  }, [email, password, password2]);
+  }, [email, password]);
 
-  const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   };
 
   return (
-    <FormTemplate title="Registration" onSubmit={handleRegister}>
+    <FormTemplate title="Login" onSubmit={handleLogin}>
       <Input
         ref={emailInputRef}
         value={email}
         setValue={setEmail}
-        id="reg-email"
+        id="login-email"
         placeholder="Email"
         labelText="Email"
         name="email"
@@ -63,7 +56,7 @@ const RegistrationForm: React.FC = (): JSX.Element => {
         ref={passwordInputRef}
         value={password}
         setValue={setPassword}
-        id="reg-password"
+        id="login-password"
         placeholder="Password"
         labelText="Password"
         name="password"
@@ -75,26 +68,9 @@ const RegistrationForm: React.FC = (): JSX.Element => {
         }}
         required
       />
-      <Input
-        ref={password2InputRef}
-        value={password2}
-        setValue={setPassword2}
-        id="reg-password2"
-        placeholder="Repeat password"
-        labelText="Repeat password"
-        name="password2"
-        type="password"
-        validationOptions={{
-          toBeEqualTo: {
-            valueToBeEqualTo: password,
-            valueName: "Password",
-          },
-        }}
-        required
-      />
-      <Button disabled={!formValid}>Register</Button>
+      <Button disabled={!formValid}>Log In</Button>
     </FormTemplate>
   );
 };
 
-export default RegistrationForm;
+export default LoginForm;

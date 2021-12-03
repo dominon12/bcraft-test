@@ -1,8 +1,6 @@
 import React from "react";
-import Title from "../Atoms/Title";
-import RegistrationForm from "../Organisms/RegistrationForm";
 
-import "./Registration.scss";
+import RegistrationForm from "../Organisms/RegistrationForm";
 
 /**
  * Registration page.
@@ -12,7 +10,6 @@ import "./Registration.scss";
 const Registration: React.FC = (): JSX.Element => {
   return (
     <div className="registration">
-      <Title className="registration__title">Registration</Title>
       <RegistrationForm />
     </div>
   );

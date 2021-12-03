@@ -8,6 +8,11 @@ interface Props {
   isLoading?: boolean;
 }
 
+/**
+ * Button component.
+ *
+ * @return {*}  {JSX.Element}
+ */
 const Button: React.FC<Props> = (props): JSX.Element => {
   return (
     <button
