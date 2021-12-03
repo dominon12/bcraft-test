@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { checkFormValid } from "../../Services/FormService";
@@ -13,6 +13,9 @@ import {
   SnackBarContext,
   SnackBarMessageColor,
 } from "../../Contexts/SnackBarContext";
+import { FormName } from "../../Types/FormTypes";
+import { getFormState } from "../../Services/FormStateService";
+import { updateFieldValue } from "../../Redux/Forms/Actions";
 
 /**
  * Renders change password form with inputs
@@ -25,7 +28,8 @@ const ChangePasswordForm: React.FC = (): JSX.Element => {
   const navigate = useNavigate();
 
   // redux
-  const user = useSelector((state: RootState) => state.user);
+  const { user, forms } = useSelector((state: RootState) => state);
+  const dispatch = useDispatch();
 
   /**
    * Navigate user to the logic page
@@ -38,13 +42,17 @@ const ChangePasswordForm: React.FC = (): JSX.Element => {
   // snackbar
   const { sendMessage } = useContext(SnackBarContext);
 
+  // saved form state
+  const formName: FormName = "change-password";
+  const formState = getFormState(forms, formName);
+
   // old password field
-  const [oldPassword, setOldPassword] = useState("");
+  const [oldPassword, setOldPassword] = useState(formState.oldPassword ?? "");
   // new password field
-  const [newPassword, setNewPassword] = useState("");
+  const [newPassword, setNewPassword] = useState(formState.newPassword ?? "");
   const newPasswordInputRef = useRef<HTMLInputElement>(null);
   // repeat password field
-  const [password2, setPassword2] = useState("");
+  const [password2, setPassword2] = useState(formState.password2 ?? "");
   const password2InputRef = useRef<HTMLInputElement>(null);
   // form
   const [formValid, setFormValid] = useState(false);
@@ -54,11 +62,25 @@ const ChangePasswordForm: React.FC = (): JSX.Element => {
    * Check if form is valid on every
    * inputs values changes
    */
-  useEffect(() => {
+  const validateForm = () => {
     const isValid = checkFormValid([newPasswordInputRef, password2InputRef]);
-
     setFormValid(isValid);
-  }, [newPassword, password2]);
+  };
+
+  /**
+   * Saves form fields values in redux's state
+   * on every change.
+   */
+  const updateFormState = () => {
+    dispatch(updateFieldValue(formName, "oldPassword", oldPassword));
+    dispatch(updateFieldValue(formName, "newPassword", newPassword));
+    dispatch(updateFieldValue(formName, "password2", password2));
+  };
+
+  useEffect(() => {
+    validateForm();
+    updateFormState();
+  }, [oldPassword, newPassword, password2]);
 
   /**
    * Sets default inputs values.

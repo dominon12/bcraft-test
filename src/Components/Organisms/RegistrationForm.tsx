@@ -15,6 +15,9 @@ import {
   SnackBarContext,
   SnackBarMessageColor,
 } from "../../Contexts/SnackBarContext";
+import { getFormState } from "../../Services/FormStateService";
+import { updateFieldValue } from "../../Redux/Forms/Actions";
+import { FormName } from "../../Types/FormTypes";
 
 /**
  * Renders registration form with inputs
@@ -27,7 +30,7 @@ const RegistrationForm: React.FC = (): JSX.Element => {
   const navigate = useNavigate();
 
   // redux
-  const user = useSelector((state: RootState) => state.user);
+  const { user, forms } = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
 
   /**
@@ -41,14 +44,18 @@ const RegistrationForm: React.FC = (): JSX.Element => {
   // snackbar
   const { sendMessage } = useContext(SnackBarContext);
 
+  // saved form state
+  const formName: FormName = "registration";
+  const formState = getFormState(forms, formName);
+
   // email field
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(formState.email ?? "");
   const emailInputRef = useRef<HTMLInputElement>(null);
   // password field
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState(formState.password ?? "");
   const passwordInputRef = useRef<HTMLInputElement>(null);
   // repeat password field
-  const [password2, setPassword2] = useState("");
+  const [password2, setPassword2] = useState(formState.password2 ?? "");
   const password2InputRef = useRef<HTMLInputElement>(null);
   // form
   const [formValid, setFormValid] = useState(false);
@@ -58,14 +65,28 @@ const RegistrationForm: React.FC = (): JSX.Element => {
    * Check if form is valid on every
    * inputs values changes
    */
-  useEffect(() => {
+  const validateForm = () => {
     const isValid = checkFormValid([
       emailInputRef,
       passwordInputRef,
       password2InputRef,
     ]);
-
     setFormValid(isValid);
+  };
+
+  /**
+   * Saves form fields values in redux's state
+   * on every change.
+   */
+  const updateFormState = () => {
+    dispatch(updateFieldValue(formName, "email", email));
+    dispatch(updateFieldValue(formName, "password", password));
+    dispatch(updateFieldValue(formName, "password2", password2));
+  };
+
+  useEffect(() => {
+    validateForm();
+    updateFormState();
   }, [email, password, password2]);
 
   /**

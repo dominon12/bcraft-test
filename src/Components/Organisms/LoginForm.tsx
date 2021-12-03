@@ -17,6 +17,7 @@ import {
 } from "../../Contexts/SnackBarContext";
 import { updateFieldValue } from "../../Redux/Forms/Actions";
 import { getFormState } from "../../Services/FormStateService";
+import { FormName } from "../../Types/FormTypes";
 
 /**
  * Renders login form with inputs
@@ -44,7 +45,8 @@ const LoginForm: React.FC = (props): JSX.Element => {
   const { sendMessage } = useContext(SnackBarContext);
 
   // saved form state
-  const formState = getFormState(forms, "login");
+  const formName: FormName = "login";
+  const formState = getFormState(forms, formName);
 
   // email field
   const [email, setEmail] = useState(formState.email ?? "");
@@ -66,17 +68,17 @@ const LoginForm: React.FC = (props): JSX.Element => {
   };
 
   /**
-   * Save form fields values in redux's state
+   * Saves form fields values in redux's state
    * on every change.
    */
-  const updateReduxFormState = () => {
-    dispatch(updateFieldValue("login", "email", email));
-    dispatch(updateFieldValue("login", "password", password));
+  const updateFormState = () => {
+    dispatch(updateFieldValue(formName, "email", email));
+    dispatch(updateFieldValue(formName, "password", password));
   };
 
   useEffect(() => {
     validateForm();
-    updateReduxFormState();
+    updateFormState();
   }, [email, password]);
 
   /**
