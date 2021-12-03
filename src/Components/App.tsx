@@ -10,7 +10,12 @@ import Login from "./Pages/Login";
 import Registration from "./Pages/Registration";
 import ChangePassword from "./Pages/ChangePassword";
 
-function App() {
+/**
+ * The main component with routing logic.
+ *
+ * @return {*}  {JSX.Element}
+ */
+const App: React.FC = (): JSX.Element => {
   return (
     <Router>
       <div className="document">
@@ -18,15 +23,15 @@ function App() {
 
         <main className="document__content">
           <Routes>
-            <Route path="/" element={<Home />} exact />
-            <Route path="/login" element={<Login />} exact />
-            <Route path="/registration" element={<Registration />} exact />
-            <Route path="/change-password" element={<ChangePassword />} exact />
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/registration" element={<Registration />} />
+            <Route path="/change-password" element={<ChangePassword />} />
           </Routes>
         </main>
       </div>
     </Router>
   );
-}
+};
 
 export default App;

@@ -5,12 +5,18 @@ import "./Header.scss";
 import NavLink from "../Atoms/NavLink";
 import AuthBar from "../Molecules/AuthBar";
 
-const Header = () => {
+/**
+ * Header with links for navigation
+ * between pages.
+ *
+ * @return {*}  {JSX.Element}
+ */
+const Header: React.FC = (): JSX.Element => {
   return (
     <header className="header">
       <div className="header__content">
         <div className="header__left">
-          <NavLink to="/" Icon={FiHome} />
+          <NavLink to="/" icon={FiHome} />
         </div>
         <div className="header__right">
           <AuthBar />

@@ -3,7 +3,14 @@ import React from "react";
 import "./AuthBar.scss";
 import NavLink from "../Atoms/NavLink";
 
-const AuthBar = () => {
+/**
+ * Nav bar which conditionally renders login and register link
+ * or change password link depending on whether user
+ * is logged in or not.
+ *
+ * @return {*}  {JSX.Element}
+ */
+const AuthBar: React.FC = (): JSX.Element => {
   const isAuthenticated = false;
 
   if (isAuthenticated) {

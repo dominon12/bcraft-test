@@ -2,7 +2,12 @@ import React from "react";
 
 import "./Login.scss";
 
-const Login = () => {
+/**
+ * Page where users can log in.
+ *
+ * @return {*}  {JSX.Element}
+ */
+const Login: React.FC = (): JSX.Element => {
   return <div className="login">Login</div>;
 };
 
