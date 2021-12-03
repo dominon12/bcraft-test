@@ -9,6 +9,7 @@ import Home from "./Pages/Home";
 import Login from "./Pages/Login";
 import Registration from "./Pages/Registration";
 import ChangePassword from "./Pages/ChangePassword";
+import Logout from "./Pages/Logout";
 
 /**
  * The main component with routing logic.
@@ -27,6 +28,7 @@ const App: React.FC = (): JSX.Element => {
             <Route path="/login" element={<Login />} />
             <Route path="/registration" element={<Registration />} />
             <Route path="/change-password" element={<ChangePassword />} />
+            <Route path="/logout" element={<Logout />} />
           </Routes>
         </main>
       </div>

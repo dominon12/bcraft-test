@@ -1,7 +1,9 @@
 import React from "react";
+import { useSelector } from "react-redux";
 
 import "./AuthBar.scss";
 import NavLink from "../Atoms/NavLink";
+import { RootState } from "../../Redux/Store";
 
 /**
  * Nav bar which conditionally renders login and register link
@@ -11,13 +13,16 @@ import NavLink from "../Atoms/NavLink";
  * @return {*}  {JSX.Element}
  */
 const AuthBar: React.FC = (): JSX.Element => {
-  const isAuthenticated = false;
+  const user = useSelector((state: RootState) => state.user);
 
-  if (isAuthenticated) {
+  if (user) {
     return (
       <div className="auth-bar">
         <div className="auth-bar__link">
           <NavLink to="/change-password" title="Change password" />
+        </div>
+        <div className="auth-bar__link">
+          <NavLink to="/logout" title="Log out" />
         </div>
       </div>
     );
