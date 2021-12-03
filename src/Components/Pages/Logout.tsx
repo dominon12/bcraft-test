@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
 import { SnackBarContext } from "../../Contexts/SnackBarContext";
+import { clearFormsState } from "../../Redux/Forms/Actions";
 import { removeUser } from "../../Redux/User/Actions";
 
 /**
@@ -10,7 +11,7 @@ import { removeUser } from "../../Redux/User/Actions";
  *
  * @return {*} null
  */
-const Logout: React.FC = (props) => {
+const Logout: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { sendMessage } = useContext(SnackBarContext);
@@ -21,6 +22,7 @@ const Logout: React.FC = (props) => {
    */
   useEffect(() => {
     dispatch(removeUser());
+    dispatch(clearFormsState());
     sendMessage("Successfully logged out");
     navigate("/");
   }, []);

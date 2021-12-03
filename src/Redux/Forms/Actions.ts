@@ -13,3 +13,7 @@ export const updateFieldValue = (
     fieldValue,
   },
 });
+
+export const clearFormsState = () => ({
+  type: types.CLEAR_STATE,
+});

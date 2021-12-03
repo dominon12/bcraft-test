@@ -40,7 +40,8 @@ const formsReducer = (state = INITIAL_STATE, action: AnyAction) => {
           formToAdd,
         ];
       }
-
+    case types.CLEAR_STATE:
+      return [];
     default:
       return state;
   }
