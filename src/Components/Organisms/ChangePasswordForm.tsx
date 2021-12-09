@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -8,10 +8,8 @@ import Input from "../Molecules/Input";
 import FormTemplate from "../Templates/FormTemplate";
 import { RootState } from "../../Redux/Store";
 import { SnackBarContext } from "../../Contexts/SnackBarContext";
-import { FormName } from "../../Types/FormTypes";
-import { getFormState } from "../../Services/FormStateService";
-import { updateFieldValue } from "../../Redux/Forms/Actions";
 import { changeUserPassword } from "../../Redux/User/Thunks";
+import useFormState, { FormFieldProps } from "../../Hooks/useFormState";
 
 /**
  * Renders change password form with inputs
@@ -24,7 +22,7 @@ const ChangePasswordForm: React.FC = (): JSX.Element => {
   const navigate = useNavigate();
 
   // redux
-  const { user, forms } = useSelector((state: RootState) => state);
+  const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
 
   /**
@@ -38,21 +36,39 @@ const ChangePasswordForm: React.FC = (): JSX.Element => {
   // snackbar
   const { sendMessage } = useContext(SnackBarContext);
 
-  // saved form state
-  const formName: FormName = "change-password";
-  const formState = getFormState(forms, formName);
-
   // old password field
-  const [oldPassword, setOldPassword] = useState(formState.oldPassword ?? "");
+  const [oldPassword, setOldPassword] = useState("");
   // new password field
-  const [newPassword, setNewPassword] = useState(formState.newPassword ?? "");
+  const [newPassword, setNewPassword] = useState("");
   const newPasswordInputRef = useRef<HTMLInputElement>(null);
   // repeat password field
-  const [password2, setPassword2] = useState(formState.password2 ?? "");
+  const [password2, setPassword2] = useState("");
   const password2InputRef = useRef<HTMLInputElement>(null);
   // form
   const [formValid, setFormValid] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // form fields mapping for useFormState hook
+  // useMemo is used to return a stable link
+  const formFieldsProps: FormFieldProps[] = useMemo(
+    () => [
+      { name: "oldPassword", value: oldPassword, setValue: setOldPassword },
+      {
+        name: "newPassword",
+        value: newPassword,
+        setValue: setNewPassword,
+      },
+      {
+        name: "password2",
+        value: password2,
+        setValue: setPassword2,
+      },
+    ],
+    [oldPassword, newPassword, password2]
+  );
+
+  // saved form state
+  useFormState("change-password", formFieldsProps);
 
   /**
    * Check if form is valid on every
@@ -63,20 +79,7 @@ const ChangePasswordForm: React.FC = (): JSX.Element => {
     setFormValid(isValid);
   };
 
-  /**
-   * Saves form fields values in redux's state
-   * on every change.
-   */
-  const updateFormState = () => {
-    dispatch(updateFieldValue(formName, "oldPassword", oldPassword));
-    dispatch(updateFieldValue(formName, "newPassword", newPassword));
-    dispatch(updateFieldValue(formName, "password2", password2));
-  };
-
-  useEffect(() => {
-    validateForm();
-    updateFormState();
-  }, [oldPassword, newPassword, password2]);
+  useEffect(() => validateForm(), [oldPassword, newPassword, password2]);
 
   /**
    * Sets default inputs values.
