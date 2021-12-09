@@ -93,7 +93,8 @@ const RegistrationForm: React.FC = (): JSX.Element => {
   };
 
   /**
-   * Handles registration process logic.
+   * Dispatches thunk action which handles user
+   * registration action and clears the form after it.
    *
    * @param {React.FormEvent<HTMLFormElement>} e
    */

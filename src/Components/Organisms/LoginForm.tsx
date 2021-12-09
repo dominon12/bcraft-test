@@ -84,7 +84,8 @@ const LoginForm: React.FC = (props): JSX.Element => {
   };
 
   /**
-   * Handles login process logic.
+   * Dispatches thunk action which handles user
+   * login action and clears the form after it.
    *
    * @param {React.FormEvent<HTMLFormElement>} e
    */
