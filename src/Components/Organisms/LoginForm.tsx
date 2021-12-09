@@ -3,21 +3,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 
 import { checkFormValid, emailPattern } from "../../Services/FormService";
-import { WebResponse } from "../../Types/ApiTypes";
-import { User } from "../../Types/UserTypes";
 import Button from "../Atoms/Button";
 import Input from "../Molecules/Input";
 import FormTemplate from "../Templates/FormTemplate";
 import { RootState } from "../../Redux/Store";
-import { addUser } from "../../Redux/User/Actions";
-import { performLogin } from "../../Services/ApiService";
-import {
-  SnackBarContext,
-  SnackBarMessageColor,
-} from "../../Contexts/SnackBarContext";
+import { SnackBarContext } from "../../Contexts/SnackBarContext";
 import { updateFieldValue } from "../../Redux/Forms/Actions";
 import { getFormState } from "../../Services/FormStateService";
 import { FormName } from "../../Types/FormTypes";
+import { loginUser } from "../../Redux/User/Thunks";
 
 /**
  * Renders login form with inputs
@@ -39,7 +33,7 @@ const LoginForm: React.FC = (props): JSX.Element => {
    */
   useEffect(() => {
     if (user) navigate("/");
-  }, []);
+  }, [user]);
 
   // snackbar
   const { sendMessage } = useContext(SnackBarContext);
@@ -97,28 +91,10 @@ const LoginForm: React.FC = (props): JSX.Element => {
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     // prevent page from reloading
     e.preventDefault();
-    // set is loading to true to indicate loading
-    setIsLoading(true);
-    // make request to api
-    const response: WebResponse = await performLogin(email, password);
-    // set is loading to false and clean form fields values
-    setIsLoading(false);
+    // dispatch thunk action
+    dispatch(loginUser(email, password, setIsLoading, sendMessage));
+    // clear the form
     clearForm();
-    // check response status
-    if (response.status === 200) {
-      // success
-      const user: User = response.data.data;
-      dispatch(addUser(user));
-      sendMessage("Successfully logged in", {
-        color: SnackBarMessageColor.SUCCESS,
-      });
-      navigate("/");
-    } else {
-      // error
-      sendMessage("An error occurred!", {
-        color: SnackBarMessageColor.DANGER,
-      });
-    }
   };
 
   return (

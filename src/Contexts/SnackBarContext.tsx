@@ -45,9 +45,10 @@ interface ISnackBarMessage {
  * Options of showing the
  * snackbar message
  *
+ * @export
  * @interface ISnackBarOptions
  */
-interface ISnackBarOptions {
+export interface ISnackBarOptions {
   color?: SnackBarMessageColor;
   delay?: number;
   action?: ISnackBarMessageAction;
