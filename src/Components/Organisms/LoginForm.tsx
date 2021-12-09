@@ -1,23 +1,15 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 
 import { checkFormValid, emailPattern } from "../../Services/FormService";
-import { WebResponse } from "../../Types/ApiTypes";
-import { User } from "../../Types/UserTypes";
 import Button from "../Atoms/Button";
 import Input from "../Molecules/Input";
 import FormTemplate from "../Templates/FormTemplate";
 import { RootState } from "../../Redux/Store";
-import { addUser } from "../../Redux/User/Actions";
-import { performLogin } from "../../Services/ApiService";
-import {
-  SnackBarContext,
-  SnackBarMessageColor,
-} from "../../Contexts/SnackBarContext";
-import { updateFieldValue } from "../../Redux/Forms/Actions";
-import { getFormState } from "../../Services/FormStateService";
-import { FormName } from "../../Types/FormTypes";
+import { SnackBarContext } from "../../Contexts/SnackBarContext";
+import { loginUser } from "../../Redux/User/Thunks";
+import useFormState, { FormFieldProps } from "../../Hooks/useFormState";
 
 /**
  * Renders login form with inputs
@@ -30,7 +22,7 @@ const LoginForm: React.FC = (props): JSX.Element => {
   const navigate = useNavigate();
 
   // redux
-  const { user, forms } = useSelector((state: RootState) => state);
+  const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
 
   /**
@@ -39,24 +31,37 @@ const LoginForm: React.FC = (props): JSX.Element => {
    */
   useEffect(() => {
     if (user) navigate("/");
-  }, []);
+  }, [user]);
 
   // snackbar
   const { sendMessage } = useContext(SnackBarContext);
 
-  // saved form state
-  const formName: FormName = "login";
-  const formState = getFormState(forms, formName);
-
   // email field
-  const [email, setEmail] = useState(formState.email ?? "");
+  const [email, setEmail] = useState("");
   const emailInputRef = useRef<HTMLInputElement>(null);
   // password field
-  const [password, setPassword] = useState(formState.password ?? "");
+  const [password, setPassword] = useState("");
   const passwordInputRef = useRef<HTMLInputElement>(null);
   // form
   const [formValid, setFormValid] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // form fields mapping for useFormState hook
+  // useMemo is used to return a stable link
+  const formFieldsProps: FormFieldProps[] = useMemo(
+    () => [
+      { name: "email", value: email, setValue: setEmail },
+      {
+        name: "password",
+        value: password,
+        setValue: setPassword,
+      },
+    ],
+    [email, password]
+  );
+
+  // saved form state
+  useFormState("login", formFieldsProps);
 
   /**
    * Check if form is valid on every
@@ -67,19 +72,7 @@ const LoginForm: React.FC = (props): JSX.Element => {
     setFormValid(isValid);
   };
 
-  /**
-   * Saves form fields values in redux's state
-   * on every change.
-   */
-  const updateFormState = () => {
-    dispatch(updateFieldValue(formName, "email", email));
-    dispatch(updateFieldValue(formName, "password", password));
-  };
-
-  useEffect(() => {
-    validateForm();
-    updateFormState();
-  }, [email, password]);
+  useEffect(() => validateForm(), [email, password]);
 
   /**
    * Sets default inputs values.
@@ -90,35 +83,18 @@ const LoginForm: React.FC = (props): JSX.Element => {
   };
 
   /**
-   * Handles login process logic.
+   * Dispatches thunk action which handles user
+   * login action and clears the form after it.
    *
    * @param {React.FormEvent<HTMLFormElement>} e
    */
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     // prevent page from reloading
     e.preventDefault();
-    // set is loading to true to indicate loading
-    setIsLoading(true);
-    // make request to api
-    const response: WebResponse = await performLogin(email, password);
-    // set is loading to false and clean form fields values
-    setIsLoading(false);
+    // dispatch thunk action
+    dispatch(loginUser(email, password, setIsLoading, sendMessage));
+    // clear the form
     clearForm();
-    // check response status
-    if (response.status === 200) {
-      // success
-      const user: User = response.data.data;
-      dispatch(addUser(user));
-      sendMessage("Successfully logged in", {
-        color: SnackBarMessageColor.SUCCESS,
-      });
-      navigate("/");
-    } else {
-      // error
-      sendMessage("An error occurred!", {
-        color: SnackBarMessageColor.DANGER,
-      });
-    }
   };
 
   return (

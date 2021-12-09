@@ -66,8 +66,11 @@ function includesUppercaseLettersValidator(
 ): string | undefined {
   if (shouldValidate) {
     const hasUppercaseLetters =
-      value.split("").filter((letter) => letter === letter.toUpperCase())
-        .length > 0;
+      value
+        .split("")
+        .filter(
+          (letter) => letter === letter.toUpperCase() && Number.isNaN(+letter)
+        ).length > 0;
     if (!hasUppercaseLetters) {
       return "Field's value must include at least one uppercase letter";
     }

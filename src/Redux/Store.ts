@@ -1,6 +1,7 @@
-import { createStore, combineReducers } from "redux";
+import { createStore, combineReducers, applyMiddleware } from "redux";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import thunk from "redux-thunk";
 
 import { User } from "../Types/UserTypes";
 import { FormState } from "../Types/FormTypes";
@@ -20,7 +21,7 @@ const rootReducer = combineReducers({
 
 const rootPersistReducer = persistReducer(persistConfig, rootReducer);
 
-export const store = createStore(rootPersistReducer);
+export const store = createStore(rootPersistReducer, applyMiddleware(thunk));
 export const persistor = persistStore(store);
 
 export interface RootState {

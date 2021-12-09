@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -7,17 +7,9 @@ import { checkFormValid, emailPattern } from "../../Services/FormService";
 import Button from "../Atoms/Button";
 import FormTemplate from "../Templates/FormTemplate";
 import { RootState } from "../../Redux/Store";
-import { WebResponse } from "../../Types/ApiTypes";
-import { performRegistration } from "../../Services/ApiService";
-import { addUser } from "../../Redux/User/Actions";
-import { User } from "../../Types/UserTypes";
-import {
-  SnackBarContext,
-  SnackBarMessageColor,
-} from "../../Contexts/SnackBarContext";
-import { getFormState } from "../../Services/FormStateService";
-import { updateFieldValue } from "../../Redux/Forms/Actions";
-import { FormName } from "../../Types/FormTypes";
+import { SnackBarContext } from "../../Contexts/SnackBarContext";
+import { registerUser } from "../../Redux/User/Thunks";
+import useFormState, { FormFieldProps } from "../../Hooks/useFormState";
 
 /**
  * Renders registration form with inputs
@@ -30,7 +22,7 @@ const RegistrationForm: React.FC = (): JSX.Element => {
   const navigate = useNavigate();
 
   // redux
-  const { user, forms } = useSelector((state: RootState) => state);
+  const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
 
   /**
@@ -39,27 +31,45 @@ const RegistrationForm: React.FC = (): JSX.Element => {
    */
   useEffect(() => {
     if (user) navigate("/");
-  }, []);
+  }, [user]);
 
   // snackbar
   const { sendMessage } = useContext(SnackBarContext);
 
-  // saved form state
-  const formName: FormName = "registration";
-  const formState = getFormState(forms, formName);
-
   // email field
-  const [email, setEmail] = useState(formState.email ?? "");
+  const [email, setEmail] = useState("");
   const emailInputRef = useRef<HTMLInputElement>(null);
   // password field
-  const [password, setPassword] = useState(formState.password ?? "");
+  const [password, setPassword] = useState("");
   const passwordInputRef = useRef<HTMLInputElement>(null);
   // repeat password field
-  const [password2, setPassword2] = useState(formState.password2 ?? "");
+  const [password2, setPassword2] = useState("");
   const password2InputRef = useRef<HTMLInputElement>(null);
   // form
   const [formValid, setFormValid] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // form fields mapping for useFormState hook
+  // useMemo is used to return a stable link
+  const formFieldsProps: FormFieldProps[] = useMemo(
+    () => [
+      { name: "email", value: email, setValue: setEmail },
+      {
+        name: "password",
+        value: password,
+        setValue: setPassword,
+      },
+      {
+        name: "password2",
+        value: password2,
+        setValue: setPassword2,
+      },
+    ],
+    [email, password, password2]
+  );
+
+  // saved form state
+  useFormState("registration", formFieldsProps);
 
   /**
    * Check if form is valid on every
@@ -74,20 +84,7 @@ const RegistrationForm: React.FC = (): JSX.Element => {
     setFormValid(isValid);
   };
 
-  /**
-   * Saves form fields values in redux's state
-   * on every change.
-   */
-  const updateFormState = () => {
-    dispatch(updateFieldValue(formName, "email", email));
-    dispatch(updateFieldValue(formName, "password", password));
-    dispatch(updateFieldValue(formName, "password2", password2));
-  };
-
-  useEffect(() => {
-    validateForm();
-    updateFormState();
-  }, [email, password, password2]);
+  useEffect(() => validateForm(), [email, password, password2]);
 
   /**
    * Sets default inputs values.
@@ -99,39 +96,20 @@ const RegistrationForm: React.FC = (): JSX.Element => {
   };
 
   /**
-   * Handles registration process logic.
+   * Dispatches thunk action which handles user
+   * registration action and clears the form after it.
    *
    * @param {React.FormEvent<HTMLFormElement>} e
    */
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     // prevent page from reloading
     e.preventDefault();
-    // set is loading to true to indicate loading
-    setIsLoading(true);
-    // make request to api
-    const response: WebResponse = await performRegistration(
-      email,
-      password,
-      password2
+    // dispatch thunk action
+    dispatch(
+      registerUser(email, password, password2, setIsLoading, sendMessage)
     );
-    // set is loading to false and clean form fields values
-    setIsLoading(false);
+    // clear the form
     clearForm();
-    // check response status
-    if (response.status === 201) {
-      // success
-      const user: User = response.data.data;
-      dispatch(addUser(user));
-      sendMessage("Successfully registered and logged in", {
-        color: SnackBarMessageColor.SUCCESS,
-      });
-      navigate("/");
-    } else {
-      // error
-      sendMessage("An error occurred!", {
-        color: SnackBarMessageColor.DANGER,
-      });
-    }
   };
 
   return (
