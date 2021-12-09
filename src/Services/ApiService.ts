@@ -13,17 +13,18 @@ export async function performLogin(
   email: string,
   password: string
 ): Promise<WebResponse> {
+  const userDataResponse: ApiResponse = {
+    success: true,
+    data: {
+      email,
+    },
+  };
+  const response: WebResponse = {
+    status: 200,
+    data: userDataResponse,
+  };
+
   return new Promise((resolve, reject) => {
-    const userDataResponse: ApiResponse = {
-      success: true,
-      data: {
-        email,
-      },
-    };
-    const response: WebResponse = {
-      status: 200,
-      data: userDataResponse,
-    };
     setTimeout(() => {
       resolve(response);
     }, 1000);
@@ -45,17 +46,18 @@ export async function performRegistration(
   password: string,
   password2: string
 ): Promise<WebResponse> {
+  const userDataResponse: ApiResponse = {
+    success: true,
+    data: {
+      email,
+    },
+  };
+  const response: WebResponse = {
+    status: 201,
+    data: userDataResponse,
+  };
+
   return new Promise((resolve, reject) => {
-    const userDataResponse: ApiResponse = {
-      success: true,
-      data: {
-        email,
-      },
-    };
-    const response: WebResponse = {
-      status: 201,
-      data: userDataResponse,
-    };
     setTimeout(() => {
       resolve(response);
     }, 1000);
@@ -77,15 +79,16 @@ export async function performChangePassword(
   newPassword: string,
   password2: string
 ): Promise<WebResponse> {
+  const userDataResponse: ApiResponse = {
+    success: true,
+    data: {},
+  };
+  const response: WebResponse = {
+    status: 202,
+    data: userDataResponse,
+  };
+ 
   return new Promise((resolve, reject) => {
-    const userDataResponse: ApiResponse = {
-      success: true,
-      data: {},
-    };
-    const response: WebResponse = {
-      status: 202,
-      data: userDataResponse,
-    };
     setTimeout(() => {
       resolve(response);
     }, 1000);

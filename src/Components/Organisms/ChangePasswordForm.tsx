@@ -7,15 +7,11 @@ import Button from "../Atoms/Button";
 import Input from "../Molecules/Input";
 import FormTemplate from "../Templates/FormTemplate";
 import { RootState } from "../../Redux/Store";
-import { WebResponse } from "../../Types/ApiTypes";
-import { performChangePassword } from "../../Services/ApiService";
-import {
-  SnackBarContext,
-  SnackBarMessageColor,
-} from "../../Contexts/SnackBarContext";
+import { SnackBarContext } from "../../Contexts/SnackBarContext";
 import { FormName } from "../../Types/FormTypes";
 import { getFormState } from "../../Services/FormStateService";
 import { updateFieldValue } from "../../Redux/Forms/Actions";
+import { changeUserPassword } from "../../Redux/User/Thunks";
 
 /**
  * Renders change password form with inputs
@@ -37,7 +33,7 @@ const ChangePasswordForm: React.FC = (): JSX.Element => {
    */
   useEffect(() => {
     if (!user) navigate("/login");
-  }, []);
+  }, [user]);
 
   // snackbar
   const { sendMessage } = useContext(SnackBarContext);
@@ -92,37 +88,26 @@ const ChangePasswordForm: React.FC = (): JSX.Element => {
   };
 
   /**
-   * Handles password change logic.
+   * Dispatches thunk action which handles password
+   * change action and clears the form after it.
    *
    * @param {React.FormEvent<HTMLFormElement>} e
    */
   const handleChangePassword = async (e: React.FormEvent<HTMLFormElement>) => {
     // prevent page from reloading
     e.preventDefault();
-    // set is loading to true to indicate loading
-    setIsLoading(true);
-    // make request to api
-    const response: WebResponse = await performChangePassword(
-      oldPassword,
-      newPassword,
-      password2
+    // dispatch thunk action
+    dispatch(
+      changeUserPassword(
+        oldPassword,
+        newPassword,
+        password2,
+        setIsLoading,
+        sendMessage
+      )
     );
-    // set is loading to false and clean form fields values
-    setIsLoading(false);
+    // clear the form
     clearForm();
-    // check response status
-    if (response.status === 202) {
-      // success
-      navigate("/");
-      sendMessage("Your password has been successfully changed!", {
-        color: SnackBarMessageColor.SUCCESS,
-      });
-    } else {
-      // error
-      sendMessage("An error occurred!", {
-        color: SnackBarMessageColor.DANGER,
-      });
-    }
   };
 
   return (
