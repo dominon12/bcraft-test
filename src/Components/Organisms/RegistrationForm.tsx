@@ -7,17 +7,11 @@ import { checkFormValid, emailPattern } from "../../Services/FormService";
 import Button from "../Atoms/Button";
 import FormTemplate from "../Templates/FormTemplate";
 import { RootState } from "../../Redux/Store";
-import { WebResponse } from "../../Types/ApiTypes";
-import { performRegistration } from "../../Services/ApiService";
-import { addUser } from "../../Redux/User/Actions";
-import { User } from "../../Types/UserTypes";
-import {
-  SnackBarContext,
-  SnackBarMessageColor,
-} from "../../Contexts/SnackBarContext";
+import { SnackBarContext } from "../../Contexts/SnackBarContext";
 import { getFormState } from "../../Services/FormStateService";
 import { updateFieldValue } from "../../Redux/Forms/Actions";
 import { FormName } from "../../Types/FormTypes";
+import { registerUser } from "../../Redux/User/Thunks";
 
 /**
  * Renders registration form with inputs
@@ -39,7 +33,7 @@ const RegistrationForm: React.FC = (): JSX.Element => {
    */
   useEffect(() => {
     if (user) navigate("/");
-  }, []);
+  }, [user]);
 
   // snackbar
   const { sendMessage } = useContext(SnackBarContext);
@@ -106,32 +100,12 @@ const RegistrationForm: React.FC = (): JSX.Element => {
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     // prevent page from reloading
     e.preventDefault();
-    // set is loading to true to indicate loading
-    setIsLoading(true);
-    // make request to api
-    const response: WebResponse = await performRegistration(
-      email,
-      password,
-      password2
+    // dispatch thunk action
+    dispatch(
+      registerUser(email, password, password2, setIsLoading, sendMessage)
     );
-    // set is loading to false and clean form fields values
-    setIsLoading(false);
+    // clear the form
     clearForm();
-    // check response status
-    if (response.status === 201) {
-      // success
-      const user: User = response.data.data;
-      dispatch(addUser(user));
-      sendMessage("Successfully registered and logged in", {
-        color: SnackBarMessageColor.SUCCESS,
-      });
-      navigate("/");
-    } else {
-      // error
-      sendMessage("An error occurred!", {
-        color: SnackBarMessageColor.DANGER,
-      });
-    }
   };
 
   return (
