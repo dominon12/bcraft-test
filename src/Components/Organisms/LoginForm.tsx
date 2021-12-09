@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 
@@ -8,10 +8,8 @@ import Input from "../Molecules/Input";
 import FormTemplate from "../Templates/FormTemplate";
 import { RootState } from "../../Redux/Store";
 import { SnackBarContext } from "../../Contexts/SnackBarContext";
-import { updateFieldValue } from "../../Redux/Forms/Actions";
-import { getFormState } from "../../Services/FormStateService";
-import { FormName } from "../../Types/FormTypes";
 import { loginUser } from "../../Redux/User/Thunks";
+import useFormState, { FormFieldProps } from "../../Hooks/useFormState";
 
 /**
  * Renders login form with inputs
@@ -24,7 +22,7 @@ const LoginForm: React.FC = (props): JSX.Element => {
   const navigate = useNavigate();
 
   // redux
-  const { user, forms } = useSelector((state: RootState) => state);
+  const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
 
   /**
@@ -38,19 +36,32 @@ const LoginForm: React.FC = (props): JSX.Element => {
   // snackbar
   const { sendMessage } = useContext(SnackBarContext);
 
-  // saved form state
-  const formName: FormName = "login";
-  const formState = getFormState(forms, formName);
-
   // email field
-  const [email, setEmail] = useState(formState.email ?? "");
+  const [email, setEmail] = useState("");
   const emailInputRef = useRef<HTMLInputElement>(null);
   // password field
-  const [password, setPassword] = useState(formState.password ?? "");
+  const [password, setPassword] = useState("");
   const passwordInputRef = useRef<HTMLInputElement>(null);
   // form
   const [formValid, setFormValid] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // form fields mapping for useFormState hook
+  // useMemo is used to return a stable link
+  const formFieldsProps: FormFieldProps[] = useMemo(
+    () => [
+      { name: "email", value: email, setValue: setEmail },
+      {
+        name: "password",
+        value: password,
+        setValue: setPassword,
+      },
+    ],
+    [email, password]
+  );
+
+  // saved form state
+  useFormState("login", formFieldsProps);
 
   /**
    * Check if form is valid on every
@@ -61,19 +72,7 @@ const LoginForm: React.FC = (props): JSX.Element => {
     setFormValid(isValid);
   };
 
-  /**
-   * Saves form fields values in redux's state
-   * on every change.
-   */
-  const updateFormState = () => {
-    dispatch(updateFieldValue(formName, "email", email));
-    dispatch(updateFieldValue(formName, "password", password));
-  };
-
-  useEffect(() => {
-    validateForm();
-    updateFormState();
-  }, [email, password]);
+  useEffect(() => validateForm(), [email, password]);
 
   /**
    * Sets default inputs values.
